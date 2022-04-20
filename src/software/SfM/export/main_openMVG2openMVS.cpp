@@ -201,6 +201,7 @@ bool exportToOpenMVS(
 
   // define structure
   scene.vertices.reserve(sfm_data.GetLandmarks().size());
+  std::cerr << "serialize the landmarks of scene: " << sfm_data.GetLandmarks().size() << std::endl;
   for (const auto& vertex: sfm_data.GetLandmarks())
   {
     const Landmark & landmark = vertex.second;
