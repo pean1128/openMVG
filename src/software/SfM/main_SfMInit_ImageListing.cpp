@@ -240,7 +240,7 @@ int main(int argc, char **argv)
   }
 
   std::cerr << "focal >> " << focal << ", ppx >> " << ppx << ", ppy >> " << ppy << std::endl;
-  exit(-1);
+  //exit(-1);
 
   if (sKmatrix.size() > 0 && focal_pixels != -1.0)
   {
