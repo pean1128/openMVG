@@ -186,6 +186,8 @@ void SfM_Data_Structure_Estimation_From_Known_Poses::filter(
   using Triplets = std::vector<graph::Triplet>;
   const Triplets triplets = graph::TripletListing(pairs);
 
+  std::cerr << "triplets size >> " << triplets.size() << "; pairs size >> " << pairs.size() << std::endl;
+
   system::LoggerProgress my_progress_bar( triplets.size(),
     "Per triplet tracks validation (discard spurious correspondences)" );
 #ifdef OPENMVG_USE_OPENMP
