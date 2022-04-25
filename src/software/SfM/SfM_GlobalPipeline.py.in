@@ -47,7 +47,13 @@ if not os.path.exists(matches_dir):
   os.mkdir(matches_dir)
 
 print ("1. Intrinsics analysis")
-pIntrisics = subprocess.Popen( [os.path.join(OPENMVG_SFM_BIN, "openMVG_main_SfMInit_ImageListing"),  "-i", input_dir, "-o", matches_dir, "-d", camera_file_params] )
+pIntrisics = subprocess.Popen( [
+  os.path.join(OPENMVG_SFM_BIN, "openMVG_main_SfMInit_ImageListing"),  
+  "-i", input_dir, 
+  "-o", matches_dir, 
+  #"-k", "352.85049306994694;0.0;352.85049306994694;0.0;352.85049306994694;352.85049306994694;0;0;1",
+  #"-P",
+  "-d", camera_file_params] )
 pIntrisics.wait()
 
 print ("2. Compute features")
@@ -65,6 +71,8 @@ pMatches.wait()
 print ("5. Filter matches" )
 pFiltering = subprocess.Popen( [os.path.join(OPENMVG_SFM_BIN, "openMVG_main_GeometricFilter"), "-i", matches_dir+"/sfm_data.json", "-m", matches_dir+"/matches.putative.bin" , "-g" , "e" , "-o" , matches_dir+"/matches.e.bin" ] )
 pFiltering.wait()
+
+#os._exit(-1)
 
 # Create the reconstruction if not present
 if not os.path.exists(reconstruction_dir):

@@ -61,6 +61,77 @@ bool checkIntrinsicStringValidity(const std::string & Kmatrix, double & focal, d
   return true;
 }
 
+bool getPriorCamera(
+	const std::string& prior_camera_file,
+  Eigen::Matrix4f& T_w2c, Eigen::Matrix3f& K)
+{	
+  std::cerr << "[getPriorCamera] get prior camera information >> " << prior_camera_file << std::endl;
+
+  std::ifstream fin(prior_camera_file);
+  if (!fin.is_open())
+  {
+    std::cerr << "[getPriorCamera] can not open file >> " << prior_camera_file << std::endl;
+    std::abort();
+  }
+  else
+  {
+    std::string line_in;
+    std::getline(fin, line_in);
+    if (line_in != "extrinsic") 
+    {
+      std::cerr << "[getPriorCamera] current line should be extrinsic!" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    T_w2c.setIdentity();
+
+    Eigen::Matrix3f R;
+    Eigen::Vector3f t;
+
+    std::getline(fin, line_in);
+    sscanf(line_in.c_str(), "%f %f %f %f", &R(0, 0), &R(0, 1), &R(0, 2), &t(0, 0));
+    
+    std::getline(fin, line_in);
+    sscanf(line_in.c_str(), "%f %f %f %f", &R(1, 0), &R(1, 1), &R(1, 2), &t(1, 0));
+    
+    std::getline(fin, line_in);
+    sscanf(line_in.c_str(), "%f %f %f %f", &R(2, 0), &R(2, 1), &R(2, 2), &t(2, 0));
+
+    // Eigen::Vector3f C = -R.inverse() * t;
+    T_w2c.block(0, 0, 3, 3) = R;
+    T_w2c.block(0, 3, 3, 1) = t;
+
+    std::cerr << R << std::endl;
+    std::cerr << t << std::endl;
+
+    std::getline(fin, line_in);
+    std::getline(fin, line_in);
+
+    std::getline(fin, line_in);
+    if (line_in != "intrinsic") 
+    {
+      std::cerr << "[getPriorCamera] current line should be intrinsic!" << std::endl;;
+      std::abort();
+    }
+
+    K.setIdentity();
+
+    std::getline(fin, line_in);
+    sscanf(line_in.c_str(), "%f %f %f", &K(0, 0), &K(0, 1), &K(0, 2));
+    
+    std::getline(fin, line_in);
+    sscanf(line_in.c_str(), "%f %f %f", &K(1, 0), &K(1, 1), &K(1, 2));
+    
+          std::getline(fin, line_in);
+    sscanf(line_in.c_str(), "%f %f %f", &K(2, 0), &K(2, 1), &K(2, 2));
+
+    std::cerr << K << std::endl;
+
+		fin.close();
+  }
+  return true;
+}
+
 bool getGPS
 (
   const std::string & filename,
@@ -405,6 +476,64 @@ int main(int argc, char **argv)
 
     // Build the view corresponding to the image
     Vec3 pose_center;
+
+#if 0
+    std::cerr << sImageFilename << std::endl;
+    std::size_t npos = sImageFilename.find("images");
+    std::string priorCameraFilename = sImageDir + "/../cams/" + sImageFilename.substr(npos+7, 8) + "_cam.txt";
+    std::cerr << "read prior camera pose file >> " << priorCameraFilename << std::endl;
+    //exit(-1);
+
+    if (b_Use_pose_prior)
+    {
+      //std::string test_file = "/Users/admin/Documents/Projects/Internal/LargeSceneReconstruction/mvs/python/output_0328/acmm/cams/00000000_cam.txt";
+      
+      Eigen::Matrix4f T_w2c; /* world to camera */
+      Eigen::Matrix3f K;
+      getPriorCamera(priorCameraFilename, T_w2c, K);
+
+
+      Eigen::Matrix4f T_c2w = T_w2c.inverse();
+
+      ViewPriors v(*iter_image, views.size(), views.size(), views.size(), width, height);
+      
+      // Add intrinsic related to the image (if any)
+      if (!intrinsic)
+      {
+        //Since the view have invalid intrinsic data
+        // (export the view, with an invalid intrinsic field value)
+        v.id_intrinsic = UndefinedIndexT;
+      }
+      else
+      {
+        // Add the defined intrinsic to the sfm_container
+        intrinsics[v.id_intrinsic] = intrinsic;
+      }
+
+      /* set camera orientation */
+      v.b_use_pose_rotation_ = true;
+      v.pose_rotation_ = T_c2w.block(0, 0, 3, 3).cast<double>();
+
+      /* set camera center */
+      v.b_use_pose_center_ = true;
+      pose_center = T_c2w.block(0, 3, 3, 1).cast<double>();
+      v.pose_center_ = pose_center;
+
+      // prior weights
+      if (prior_w_info.first == true)
+      {
+        v.center_weight_ = prior_w_info.second;
+      }
+      // Add the view to the sfm_container
+      views[v.id_view] = std::make_shared<ViewPriors>(v);
+    }
+    else 
+    {
+      std::abort();
+    }
+
+#else
+    /* load gps pose */
     if (getGPS(sImageFilename, i_GPS_XYZ_method, pose_center) && b_Use_pose_prior)
     {
       ViewPriors v(*iter_image, views.size(), views.size(), views.size(), width, height);
@@ -449,10 +578,10 @@ int main(int argc, char **argv)
         // Add the defined intrinsic to the sfm_container
         intrinsics[v.id_intrinsic] = intrinsic;
       }
-
       // Add the view to the sfm_container
       views[v.id_view] = std::make_shared<View>(v);
     }
+#endif
   }
 
   // Display saved warning & error messages if any.

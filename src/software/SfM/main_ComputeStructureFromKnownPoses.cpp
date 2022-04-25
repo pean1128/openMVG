@@ -350,8 +350,9 @@ int main(int argc, char **argv)
     structure_estimator.run(sfm_data, pairs, regions_provider,
       static_cast<ETriangulationMethod>(triangulation_method));
     OPENMVG_LOG_INFO << "\nStructure estimation took (s): " << timer.elapsed() << ".";
-
   }
+
+  
   regions_provider.reset(); // Regions are not longer needed.
   RemoveOutliers_AngleError(sfm_data, 2.0);
 

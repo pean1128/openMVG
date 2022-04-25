@@ -36,6 +36,7 @@
 #include "io_readGTKitti.hpp"
 #include "io_readGTMiddleBury.hpp"
 #include "io_readGTStrecha.hpp"
+#include "io_readGTMFTMVS.hpp"
 
 using namespace openMVG;
 using namespace openMVG::cameras;
@@ -63,7 +64,6 @@ int main(int argc, char **argv)
   cmd.add( make_option('t', ground_truth_Dataset, "groundTruthDataset"));
   cmd.add( make_option('o', sOutputDir, "outputDirectory") );
 
-
   try {
       if (argc == 1) throw std::string("Invalid command line parameter.");
       cmd.process(argc, argv);
@@ -79,6 +79,7 @@ int main(int argc, char **argv)
         << "\t 4: ETH 3D Dataset\n"
         << "\t 5: Kitti Odometry Dataset\n"
         << "\t 6: BlendedMVS Dataset\n"
+        << "\t 7: MFTMVS Dataset\n"
         << "[-o|--outputDirectory]\n";
 
       OPENMVG_LOG_ERROR << s;
@@ -121,7 +122,6 @@ int main(int argc, char **argv)
     }
   }
 
-
   // Configure an empty scene with Views and their corresponding cameras
   std::shared_ptr<SfM_Data_GT_Loader_Interface> sfm_data_gt;
   switch(ground_truth_Dataset)
@@ -143,6 +143,9 @@ int main(int argc, char **argv)
       break;
     case 6:
       sfm_data_gt = std::make_shared<SfM_Data_GT_Loader_BlendedMVS>();
+      break;
+    case 7:
+      sfm_data_gt = std::make_shared<SfM_Data_GT_Loader_MFTMVS>();
       break;
     default:
       OPENMVG_LOG_ERROR << "Error: Not Support Dataset";

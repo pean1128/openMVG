@@ -302,11 +302,13 @@ int main( int argc, char** argv )
     {
       // From matching mode compute the pair list that have to be matched:
       Pair_Set pairs;
+
+      // todo: 读取预录入的数据
       if ( sPredefinedPairList.empty() )
       {
         OPENMVG_LOG_INFO << "No input pair file set. Use exhaustive match by default.";
         const size_t NImage = sfm_data.GetViews().size();
-        pairs = exhaustivePairs( NImage );
+        pairs = exhaustivePairs( NImage ); 
       }
       else
       if ( !loadPairs( sfm_data.GetViews().size(), sPredefinedPairList, pairs ) )

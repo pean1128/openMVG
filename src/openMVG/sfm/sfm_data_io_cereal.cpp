@@ -165,6 +165,7 @@ bool Load_Cereal(
         }
       }
     }
+    
     if (b_intrinsics)
       archive(cereal::make_nvp("intrinsics", data.intrinsics));
     else
