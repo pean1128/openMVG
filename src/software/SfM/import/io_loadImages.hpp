@@ -97,12 +97,19 @@ bool LoadImages
       focal, pxx, pyy);
 
     // Add the view to the sfm_container
+    // std::cerr << "view->id_view >> " << view->id_view << std::endl;
+    // std::cerr << "view->id_intrinsic >> " << view->id_intrinsic << std::endl;
+
     views[view->id_view] = view;
     // Add the pose to the sfm_container
     poses[view->id_pose] = pose;
     // Add the intrinsic to the sfm_container
+
+    view->id_intrinsic = 0;
     intrinsics[view->id_intrinsic] = intrinsic;
   }
+
+  //exit(-1);
 
   // Display saved warning & error messages if any.
   if (!error_report_stream.str().empty())

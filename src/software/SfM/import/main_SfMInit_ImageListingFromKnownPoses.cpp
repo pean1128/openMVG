@@ -173,5 +173,13 @@ int main(int argc, char **argv)
     << "usable #File(s) listed in sfm_data: " << sfm_data_gt->GetSfMData().GetViews().size() << "\n"
     << "usable #Pose(s) listed in sfm_data: " << sfm_data_gt->GetSfMData().GetPoses().size() << "\n"
     << "usable #Intrinsic(s) listed in sfm_data: " << sfm_data_gt->GetSfMData().GetIntrinsics().size();
+
+  std::cerr << sfm_data_gt->GetSfMData().GetIntrinsics().size() << std::endl;
+  const auto intrinsics = sfm_data_gt->GetSfMData().GetIntrinsics();
+  for (auto iter = intrinsics.begin(); iter != intrinsics.end(); iter++)
+  {
+    std::cerr << iter->first << std::endl;
+    std::cerr << iter->second->h_ << " " << iter->second->w_ << std::endl;
+  }
   return EXIT_SUCCESS;
 }
