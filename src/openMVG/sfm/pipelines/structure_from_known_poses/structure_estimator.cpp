@@ -75,8 +75,11 @@ void SfM_Data_Structure_Estimation_From_Known_Poses::run(
 {
   sfm_data.structure.clear();
 
+  std::cerr << "SfM_Data_Structure_Estimation_From_Known_Poses: match" << std::endl;
   match(sfm_data, pairs, regions_provider);
+  std::cerr << "SfM_Data_Structure_Estimation_From_Known_Poses: filter" << std::endl;
   filter(sfm_data, pairs, regions_provider);
+  std::cerr << "SfM_Data_Structure_Estimation_From_Known_Poses: triangulate" << std::endl;
   triangulate(sfm_data, regions_provider, triangulation_method);
 }
 

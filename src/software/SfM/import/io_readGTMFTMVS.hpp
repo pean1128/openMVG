@@ -111,6 +111,7 @@ public:
     int image_number_count = static_cast<int>(gt_files.size());
     cameras_data_.reserve(image_number_count);
 
+    int view_count = 0;
     for (const auto& gt_file : gt_files)
     {
       // std::ifstream camera_data_file( stlplus::create_filespec(this->gt_dir_, gt_file), std::ifstream::in);
@@ -145,6 +146,15 @@ public:
       std::size_t npos = gt_file.find("_cam");
       std::string image_name = gt_file.substr(0, npos) + ".jpg";
       images_.emplace_back(image_name);
+
+      if (view_count > 10)
+      {
+        break;
+      }
+      else 
+      {
+        view_count++;
+      }
     }
 
     return true;

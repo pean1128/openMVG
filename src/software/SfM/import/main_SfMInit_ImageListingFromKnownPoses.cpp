@@ -180,6 +180,8 @@ int main(int argc, char **argv)
   {
     std::cerr << iter->first << std::endl;
     std::cerr << iter->second->h_ << " " << iter->second->w_ << std::endl;
+    std::shared_ptr<cameras::IntrinsicBase> intrinsic = iter->second;
+    std::cerr << dynamic_cast<openMVG::cameras::Pinhole_Intrinsic&>(*intrinsic).K() << std::endl;
   }
   return EXIT_SUCCESS;
 }
