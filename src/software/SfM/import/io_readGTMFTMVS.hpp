@@ -147,7 +147,7 @@ public:
       std::string image_name = gt_file.substr(0, npos) + ".jpg";
       images_.emplace_back(image_name);
 
-      if (view_count > 10)
+      if (view_count > 1000)
       {
         break;
       }
